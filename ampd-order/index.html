@@ -190,6 +190,7 @@
     <div id="lines"></div>
     <div class="totals" id="totals"><span>Total</span><strong id="total">₱0</strong></div>
     <div class="field"><label for="name">Your name</label><input id="name" type="text" placeholder="So we know who's picking up" autocomplete="name"></div>
+    <div class="field"><label for="phone">Mobile number</label><input id="phone" type="tel" inputmode="tel" placeholder="09XX XXX XXXX" autocomplete="tel"></div>
     <div class="field"><label for="time">Pick-up time</label>
       <select id="time">
         <option value="">Choose a time</option>
@@ -304,11 +305,12 @@ function renderCart(){
 }
 
 function orderText(){
-  const name=$("#name").value.trim(), time=$("#time").value, notes=$("#notes").value.trim();
+  const name=$("#name").value.trim(), phone=$("#phone").value.trim(), time=$("#time").value, notes=$("#notes").value.trim();
   let s=`Hi ${SHOP.name}! I'd like to order for pick-up:\n\n`;
   for(const [id,q] of Object.entries(cart)){const m=item(id);s+=`${q} × ${m.name} — ${money(m.price*q)}\n`;}
   s+=`\nTotal: ${money(total())}`;
   s+=`\nName: ${name||"—"}`;
+  s+=`\nMobile: ${phone||"—"}`;
   s+=`\nPick-up: ${time||"—"}`;
   if(notes) s+=`\nNotes: ${notes}`;
   return s;
@@ -332,6 +334,8 @@ document.addEventListener("keydown",e=>{ if(e.key==="Escape") closeCart(); });
 
 $("#sendBtn").onclick=async()=>{
   if(!$("#name").value.trim()){ $("#name").focus(); toast("Add your name so we know who's picking up"); return; }
+  const digits=$("#phone").value.replace(/\D/g,"");
+  if(digits.length<10){ $("#phone").focus(); toast("Add a mobile number we can reach you on"); return; }
   if(!$("#time").value){ $("#time").focus(); toast("Choose a pick-up time"); return; }
   const t=orderText();
   $("#orderText").value=t; $("#summary").classList.add("show");
